@@ -1,0 +1,111 @@
+#Iris flower classification ML project
+
+#importing all the required libraries to the python notebook
+import numpy as np
+import pandas as pd
+
+
+#Loading the iris dataset from Drive
+from google.colab import drive
+drive.mount('/content/drive/')
+iris = pd.read_csv("/content/drive/MyDrive/Datasets/Iris flower classification ML project/IRIS (1).csv")
+
+
+
+
+iris
+iris.insert(0, 'Id', range(1, 1 + len(iris)))
+iris.info()
+
+iris.isnull().sum()
+Hence no null values found .
+so no need to drop any column
+
+
+iris.shape
+
+iris.dtypes
+
+
+iris.columns
+
+
+
+target=iris['species']
+target
+
+
+df=iris.drop("species",axis=1)
+df
+
+
+#Training data
+from sklearn.model_selection import train_test_split
+x_train,x_test,y_train,y_test=train_test_split(df,target,test_size=0.3)
+print(x_train.shape)
+print(y_train.shape)
+print(x_test.shape)
+print(y_test.shape)
+
+
+
+X=df
+y=target
+
+
+#split the dataset in the Training and testing 
+from sklearn.model_selection import train_test_split
+X_train , X_test ,y_train, y_test = train_test_split(df,target,test_size=0.2,random_state=0)
+print(np.shape(X))
+print(np.shape(X_test))
+print(np.shape(X_train))
+
+#Create the object of StandardScaler class for independent variables or features
+from sklearn.preprocessing import StandardScaler 
+sc=StandardScaler()
+sc.fit(X_train)
+X_train_std = sc.transform(X_train)
+X_test_std = sc.transform(X_test)
+
+#Build models
+#SVM
+### SVM (Support Vector Machine)
+from sklearn.svm import SVC
+svm = SVC(kernel='linear', C=1,random_state=0)
+svm.fit(X_train_std,y_train)
+y_pred=svm.predict(X_test_std)
+print('misclassified samples: %d'%(y_test!=y_pred).sum())
+from sklearn.metrics import accuracy_score
+print('Accuracy:%.2f'%accuracy_score(y_test,y_pred))
+
+
+#KNN
+from sklearn.metrics import confusion_matrix
+### KNN (K-Nearest Neighbors)
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.metrics import accuracy_score
+knn1=KNeighborsClassifier(n_neighbors=4)
+knn1.fit(X_train_std,y_train)
+y_pred=knn1.predict(X_test_std)
+print('misclassified samples: %d'%(y_test!=y_pred).sum())
+from sklearn.metrics import accuracy_score
+print('Accuracy:%.2f'%accuracy_score(y_test,y_pred))
+cm=confusion_matrix(y_test,y_pred)
+print(cm)
+
+
+
+#Logistic Regression
+### Logistic Regression
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import classification_report, confusion_matrix
+model = LogisticRegression(solver='liblinear', random_state=2)
+model.fit(X_train,y_train)
+model = LogisticRegression(solver='liblinear', random_state=0).fit(X, y)
+model.predict_proba(X)
+model.predict(X)
+model.score(X,y)
+print(classification_report(y, model.predict(X)))
+accuracy=model.score(X,y)
+print('misclassified samples: %d'%(y_test!=y_pred).sum())
+print('Accuracy:%.2f'%accuracy)
